@@ -4,32 +4,63 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ProductsController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $products = Product::all();
-        return view("products",compact("products"));
+        return view("products", compact("products"));
     }
 
-    public function addToCart($id){
+    public function cart()
+    {
+        //dd(session('cart'));
+        return view('cart');
+    }
+
+    public function addToCart($id)
+    {
         $product = Product::findOrFail($id);
 
         $cart = session()->get('cart', []);
 
-        if(isset($cart[$id])){
+        if (isset($cart[$id])) {
             $cart[$id]['quantity']++;
-        }
-        else{
+        } else {
             $cart[$id] = [
-                'product_name'=> $product->product_name,
-                'photo' => $product->product_photo,
-                'price' => $product->product_price,
-                'quantity'=> 1
+                'product_name' => $product->product_name,
+                'photo' => $product->photo,
+                'price' => $product->price,
+                'quantity' => 1
             ];
         }
 
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Product add to cart successfully!');
+    }
+
+    public function update(Request $request){
+
+        if ($request->id && $request->quantity) {
+            $cart = session()->get('cart');
+            $cart[$request->id]['quantity'] = $request->quantity;
+
+            session()->put('cart', $cart);
+            session()->flash('success', 'Cart successfully removed!');
+        }
+    }
+
+    public function remove(Request $request)
+    {
+        if($request->id){
+            $cart = session()->get('cart');
+            if (isset($cart[$request->id])) {
+                unset($cart[$request->id]);
+                session()->put('cart', $cart);
+            }
+            session()->flash('success', 'Product successfully removed!');
+        }
     }
 }
