@@ -4,7 +4,7 @@
     <div class="row">
         @foreach ($products as $product)
             <div class="col-xs-18 col-sm-6 col-md-4" style="margin-top=10px;">
-                <img src="/{{ $product->photo }}" class="img-fluid">
+                <img src="img/{{ $product->photo }}" class="img-fluid">
                 <div class="caption">
 
                     <h4>{{ $product->product_name }}</h4>
